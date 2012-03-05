@@ -75,7 +75,6 @@ class Chatham_FPSNavigator
         @FPSNav_prevMouseX = 0
         @FPSNav_prevMouseY = 0
         @FPSNav_mouseClickedFlag = 0
-        @FPSNav_speedFlag = 0
         #This timer controls how often the movement should update
         @FPSNav_mouseLookTimer = UI.start_timer(@@Chatham_FPSNav_pauseLength, true) {mouseLook}
         
@@ -133,27 +132,27 @@ class Chatham_FPSNavigator
         
     def onKeyUp(key, repeat, flags, view)
         # mac: only arrow key   #A, Left, or Numpad 4
-        if ((key == 65 && repeat == 1)  || (key == 63234 && repeat == 1)  || (key == VK_LEFT && repeat == 1) || (key == 100 && repeat == 1) )
+        if ((key == 65)  || (key == 63234)  || (key == VK_LEFT) || (key == 100) )
             @FPSNav_moveKeyFlags &= ~0b0010
         end
         # mac: only arrow key   #D, Right, or Numpad 6
-        if ((key == 68 && repeat == 1)  || (key == 63235 && repeat == 1)  || (key == VK_RIGHT && repeat == 1) || (key == 102 && repeat == 1) )
+        if ((key == 68)  || (key == 63235)  || (key == VK_RIGHT) || (key == 102) )
             @FPSNav_moveKeyFlags &= ~0b0001
         end
         # mac: only arrow key   #W, Up, or Numpad 8
-        if ((key == 87 && repeat == 1)  || (key == 63232 && repeat == 1)  || (key == VK_UP && repeat == 1) || (key == 104 && repeat == 1) )
+        if ((key == 87)  || (key == 63232)  || (key == VK_UP) || (key == 104) )
             @FPSNav_moveKeyFlags &= ~0b1000
         end 
         # mac: only arrow key   #D, Down, or Numpad 5
-        if ((key == 83 && repeat == 1)  || (key == 63233 && repeat == 1)  || (key == VK_DOWN && repeat == 1) || (key == 101 && repeat == 1) )
+        if ((key == 83)  || (key == 63233)  || (key == VK_DOWN) || (key == 101) )
             @FPSNav_moveKeyFlags &= ~0b0100
         end
         # mac  > or command key   #E or Numpad 9
-        if((key == 69 && repeat == 1)  ||  (key == 46 && repeat == 1) || (key == VK_COMMAND && repeat == 1) )
+        if((key == 69)  ||  (key == 46) || (key == VK_COMMAND) )
             @FPSNav_moveKeyFlags &= ~0b100000
         end 
         # mac < or option key   #Q or Numpad 7
-        if((key == 81 && repeat == 1)  ||  (key == 44 && repeat == 1) || (key == VK_ALT && repeat == 1) )
+        if((key == 81)  ||  (key == 44) || (key == VK_ALT) )
             @FPSNav_moveKeyFlags &= ~0b010000
         end
         # If we were moving and let all the movement keys go, stop the moving routine
@@ -214,16 +213,13 @@ class Chatham_FPSNavigator
         end
         # Make a transform so we can move the camera and the view target
         # both however far forward
-  #      if (@FPSNav_speedFlag == 1)
-                if @FPS_accel == nil
-                    @FPS_accel = 1 + @@Chatham_FPSNav_accelerationUnit
-                else
-                    @FPS_accel += @@Chatham_FPSNav_accelerationUnit
-                end
-            movementVector.length = @@Chatham_FPSNav_moveSpeed * @FPS_accel    #   10
-  #      else
-  #          movementVector.length = @@Chatham_FPSNav_moveSpeed
-  #      end
+        if @FPS_accel == nil
+            @FPS_accel = 1 + @@Chatham_FPSNav_accelerationUnit
+        else
+            @FPS_accel += @@Chatham_FPSNav_accelerationUnit
+        end
+        movementVector.length = @@Chatham_FPSNav_moveSpeed * @FPS_accel    #   10
+ 
         ## Clamp the movement speed
         if (movementVector.length > @@Chatham_FPSNav_maxSpeed)
             movementVector.length = @@Chatham_FPSNav_maxSpeed
@@ -277,21 +273,9 @@ class Chatham_FPSNavigator
         end
     end
     
-#        MV accel with mouse 2click
-#        def onRButtonDoubleClick(flags, x, y, view)
-#            @FPSNav_speedFlag += 1
-#                    @FPSNav_speedFlag = 0 if @FPSNav_speedFlag == 2
-#        end
-
-
- #   def onRButtonUp(flags, x, y, view)
- #       @FPSNav_speedFlag = 0
- #   end
-    
     # If we leave the view, stop mouseLooking and go back to normal speed
     def onMouseLeave(view)
         @FPSNav_mouseClickedFlag = 0
-#        @FPSNav_speedFlag = 0
     end
 
     # For this tool, allow vcb text entry while the tool is active.
@@ -343,7 +327,6 @@ class Chatham_FPSNavigator
             tempTarget = @FPSNav_target.transform(yRotationTransformation)
             vector1 = tempTarget - @FPSNav_eye
             angle = vector1.angle_between(@FPSNav_up)
-            #if (angle > 0.20 && angle < 3)
             if (angle > 0 && angle < 3)
                 @FPSNav_target.transform!(yRotationTransformation)
             end
@@ -355,24 +338,9 @@ class Chatham_FPSNavigator
         end #End of if (mouseClickedFlag) statement
     end
     
-#   def self.fpsNavOptions
-#        prompts = ["Movement Speed (5)", "X Axis Sensitivity (.0025)", "Y Axis Sensitivity (.0016)"]
-#        defaults = [@@Chatham_FPSNav_moveSpeed.to_s, (1/Float(@@Chatham_FPSNav_xSensitivity)).to_s, (1/Float(@@Chatham_FPSNav_ySensitivity)).to_s]
-#        input = UI.inputbox prompts, defaults, "FPSNav Options"
-#        if (input != false)
-#            @@Chatham_FPSNav_moveSpeed = input[0].to_i
-#            @@Chatham_FPSNav_xSensitivity = (1/(input[1].to_f)).to_i
-#            @@Chatham_FPSNav_ySensitivity = (1/(input[2].to_f)).to_i
-#            if (input != nil)
-#                Sketchup.write_default "Chatham_FPSNav", "Chatham_FPSNav_moveSpeed", input[0]
-#                Sketchup.write_default "Chatham_FPSNav", "Chatham_FPSNav_xSensitivity", @@Chatham_FPSNav_xSensitivity.to_s
-#                Sketchup.write_default "Chatham_FPSNav", "Chatham_FPSNav_ySensitivity", @@Chatham_FPSNav_ySensitivity.to_s
-#            end
-#        end
-#    end
          # Create the WebDialog instance
     def self.fpsNavOptions
-        my_dialog = UI::WebDialog.new("FPSNav", false, "FPSNav", 260, 250, 200, 200, true)
+        my_dialog = UI::WebDialog.new("FPSNav", false, "FPSNav", 260, 300, 200, 200, true)
 
         # Attach an action callback
         my_dialog.add_action_callback("returnValues"){|fpsNav_dialog,valueList| setValues(valueList)}
