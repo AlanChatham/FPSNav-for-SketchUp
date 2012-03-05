@@ -343,7 +343,10 @@ class Chatham_FPSNavigator
         my_dialog = UI::WebDialog.new("FPSNav", false, "FPSNav", 260, 300, 200, 200, true)
 
         # Attach an action callback
-        my_dialog.add_action_callback("returnValues"){|fpsNav_dialog,valueList| setValues(valueList)}
+        my_dialog.add_action_callback("returnValues"){|fpsNav_dialog,valueList|
+            setValues(valueList)
+            my_dialog.close()
+        }
         
         my_dialog.add_action_callback("pageLoaded"){
             |fpsNav_dialog,action_name|
@@ -369,6 +372,7 @@ class Chatham_FPSNavigator
         xSensitivity = valuesArray[1].to_i
         ySensitivity = valuesArray[2].to_i
         
+        #Use the values and store them to the registry
         if (speed > 0 && speed < 50)
             @@Chatham_FPSNav_moveSpeed = speed
             @@Chatham_FPSNav_maxSpeed = speed
