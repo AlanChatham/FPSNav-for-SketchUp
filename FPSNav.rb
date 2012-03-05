@@ -36,6 +36,8 @@ class Chatham_FPSNavigator
     @FPS_accel = 1
     @@Chatham_FPSNav_accelerationUnit = 0.3
     @@Chatham_FPSNav_maxSpeed = 20
+    @@SensitivityMax = 800
+    @@SensitivityMin = 200
     
     def initialize
     end
@@ -353,22 +355,67 @@ class Chatham_FPSNavigator
         end #End of if (mouseClickedFlag) statement
     end
     
+#   def self.fpsNavOptions
+#        prompts = ["Movement Speed (5)", "X Axis Sensitivity (.0025)", "Y Axis Sensitivity (.0016)"]
+#        defaults = [@@Chatham_FPSNav_moveSpeed.to_s, (1/Float(@@Chatham_FPSNav_xSensitivity)).to_s, (1/Float(@@Chatham_FPSNav_ySensitivity)).to_s]
+#        input = UI.inputbox prompts, defaults, "FPSNav Options"
+#        if (input != false)
+#            @@Chatham_FPSNav_moveSpeed = input[0].to_i
+#            @@Chatham_FPSNav_xSensitivity = (1/(input[1].to_f)).to_i
+#            @@Chatham_FPSNav_ySensitivity = (1/(input[2].to_f)).to_i
+#            if (input != nil)
+#                Sketchup.write_default "Chatham_FPSNav", "Chatham_FPSNav_moveSpeed", input[0]
+#                Sketchup.write_default "Chatham_FPSNav", "Chatham_FPSNav_xSensitivity", @@Chatham_FPSNav_xSensitivity.to_s
+#                Sketchup.write_default "Chatham_FPSNav", "Chatham_FPSNav_ySensitivity", @@Chatham_FPSNav_ySensitivity.to_s
+#            end
+#        end
+#    end
+         # Create the WebDialog instance
     def self.fpsNavOptions
-        prompts = ["Movement Speed (5)", "X Axis Sensitivity (.0025)", "Y Axis Sensitivity (.0016)"]
-        defaults = [@@Chatham_FPSNav_moveSpeed.to_s, (1/Float(@@Chatham_FPSNav_xSensitivity)).to_s, (1/Float(@@Chatham_FPSNav_ySensitivity)).to_s]
-        input = UI.inputbox prompts, defaults, "FPSNav Options"
-        if (input != false)
-            @@Chatham_FPSNav_moveSpeed = input[0].to_i
-            @@Chatham_FPSNav_xSensitivity = (1/(input[1].to_f)).to_i
-            @@Chatham_FPSNav_ySensitivity = (1/(input[2].to_f)).to_i
-            if (input != nil)
-                Sketchup.write_default "Chatham_FPSNav", "Chatham_FPSNav_moveSpeed", input[0]
-                Sketchup.write_default "Chatham_FPSNav", "Chatham_FPSNav_xSensitivity", @@Chatham_FPSNav_xSensitivity.to_s
-                Sketchup.write_default "Chatham_FPSNav", "Chatham_FPSNav_ySensitivity", @@Chatham_FPSNav_ySensitivity.to_s
-            end
+        my_dialog = UI::WebDialog.new("FPSNav", false, "FPSNav", 260, 250, 200, 200, true)
+
+        # Attach an action callback
+        my_dialog.add_action_callback("returnValues"){|fpsNav_dialog,valueList| setValues(valueList)}
+        
+        my_dialog.add_action_callback("pageLoaded"){
+            |fpsNav_dialog,action_name|
+                #Send current values to the dialog
+            speed = @@Chatham_FPSNav_moveSpeed.to_s
+            xSensitivity = @@Chatham_FPSNav_xSensitivity.to_s
+            ySensitivity = @@Chatham_FPSNav_ySensitivity.to_s
+            my_dialog.execute_script("populateFields(" + speed + "," + xSensitivity +"," + ySensitivity +")")
+        }
+        
+        my_dialog.add_action_callback("closeDialog"){|fpsNav_dialog, value| my_dialog.close()}
+                
+        # Find and show our html file
+        html_path = Sketchup.find_support_file "FPSNavMenu.html" ,"Plugins/FPSNav"
+        my_dialog.set_file(html_path)
+        my_dialog.show()
+    end
+        
+    def self.setValues(valuesString)
+        valuesArray = valuesString.split(":")
+        #Make sure we get sensible values in
+        speed = valuesArray[0].to_i
+        xSensitivity = valuesArray[1].to_i
+        ySensitivity = valuesArray[2].to_i
+        
+        if (speed > 0 && speed < 50)
+            @@Chatham_FPSNav_moveSpeed = speed
+            @@Chatham_FPSNav_maxSpeed = speed
+            Sketchup.write_default "Chatham_FPSNav", "Chatham_FPSNav_moveSpeed", @@Chatham_FPSNav_moveSpeed
+        end
+        if (xSensitivity >= @@SensitivityMin && xSensitivity <= @@SensitivityMax)
+            @@Chatham_FPSNav_xSensitivity = xSensitivity
+            Sketchup.write_default "Chatham_FPSNav", "Chatham_FPSNav_xSensitivity", @@Chatham_FPSNav_xSensitivity.to_s
+        end
+        if (ySensitivity >= @@SensitivityMin && ySensitivity <= @@SensitivityMax)
+            @@Chatham_FPSNav_ySensitivity = ySensitivity
+            Sketchup.write_default "Chatham_FPSNav", "Chatham_FPSNav_ySensitivity", @@Chatham_FPSNav_ySensitivity.to_s
         end
     end
-    
+ 
                 # This functions is just a shortcut for selecting the new tool
     def self.fpsNavTool
         puts Sketchup.active_model.tools
