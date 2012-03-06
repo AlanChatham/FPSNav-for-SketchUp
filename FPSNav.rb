@@ -176,8 +176,10 @@ class Chatham_FPSNavigator
         # Eliminate the z component
         forwardVector.z = 0
         # If we're facing straight down, then make the movement vector the upward vector instead
+        movementUp = @FPSNav_up
         if (forwardVector.length == 0)
             forwardVector = @FPSNav_currentView.camera.up
+            movementUp = forwardVector
         end
         # Make the length equal 1
         forwardVector.normalize!
@@ -236,12 +238,11 @@ class Chatham_FPSNavigator
         sceneCamera = @FPSNav_currentView.camera
         @FPSNav_eye =  sceneCamera.eye 
         @FPSNav_target =  sceneCamera.target
-        @FPSNav_up = sceneCamera.up
         #Now move those values
         @FPSNav_eye.transform!(movementTransform)
         @FPSNav_target.transform!(movementTransform)
         # Finally, change the camera
-        @FPSNav_currentView.camera.set(@FPSNav_eye, @FPSNav_target, @FPSNav_up)
+        @FPSNav_currentView.camera.set(@FPSNav_eye, @FPSNav_target, movementUp)
    
         # And show the eye height
         Sketchup.vcb_value = @FPSNav_eye.z;
@@ -314,6 +315,16 @@ class Chatham_FPSNavigator
             sceneCamera = @FPSNav_currentView.camera
             @FPSNav_eye =  sceneCamera.eye 
             @FPSNav_target =  sceneCamera.target
+            # Control our camera.up - if we're looking straight down, work around that
+             #  We'll use this to calculate camera position
+            forwardVector = @FPSNav_target - @FPSNav_eye
+            # Eliminate the z component
+            forwardVector.z = 0
+            mouseLookUp = @FPSNav_up
+            if (forwardVector.length == 0)
+                puts 'vertical'
+                mouseLookUp.y = 0.1
+            end
             
             # We'll do the X rotation first (rotating around the eye, on a verical axis, A radians
             verticalAxis = Geom::Vector3d.new(0,0,1)
@@ -326,6 +337,7 @@ class Chatham_FPSNavigator
             forwardVector = @FPSNav_target - @FPSNav_eye
             forwardVector.z = 0
             horizontalAxis = Geom::Vector3d.new((-1 * forwardVector.y), forwardVector.x, 0)
+            horizontalAxis = sceneCamera.xaxis
             radiansToRotate = Float(@FPSNav_mouseY - @FPSNav_prevMouseY ) / @@Chatham_FPSNav_ySensitivity
             # And limit this axis
             yRotationTransformation = Geom::Transformation.rotation(@FPSNav_eye, horizontalAxis, radiansToRotate)
@@ -336,7 +348,7 @@ class Chatham_FPSNavigator
                 @FPSNav_target.transform!(yRotationTransformation)
             end
             # Set the camera
-            @FPSNav_currentView.camera.set(@FPSNav_eye, @FPSNav_target, @FPSNav_up)
+            @FPSNav_currentView.camera.set(@FPSNav_eye, @FPSNav_target, mouseLookUp)
             # Finally, set the mouse position variables to be ready for next time
             @FPSNav_prevMouseX = @FPSNav_mouseX
             @FPSNav_prevMouseY = @FPSNav_mouseY
