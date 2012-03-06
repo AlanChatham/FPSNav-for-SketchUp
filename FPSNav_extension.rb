@@ -25,16 +25,15 @@
      require 'extensions.rb'
 
      fpsNav = SketchupExtension.new "FPSNav", "FPSNav/FPSNav.rb"
-     fpsNav.version = '0.3'
+     fpsNav.version = '0.4'
      fpsNav.copyright = "2012"
-     fpsNav.creator = "Alan Chatham <alan.chatham@gmail.com>"
+     fpsNav.creator = "Alan Chatham"
      fpsNav.description = "First-Person Shooter Style Navigation."
      fpsNav.description += "  When active, move with the arrow keys; alternately, hold 'Shift' and move with WASD, or use the numeric keypad."
      fpsNav.description += "  Movement is restricted to the X-Y Plane."
      fpsNav.description += "  Pressing Shift + Q will move you down in the Z direction, and Shift + E will move you up."
      fpsNav.description += "  Alternatively, 7 and 9 on the numeric keypad do the same"
-     fpsNav.description += "  Left-click the mouse and hold to look around."
-     fpsNav.description += "  Double-click to lock mouselook on until you click again."
-     fpsNav.description += "  Right-click and hold, and you will move 10 times as fast."
-     fpsNav.description += "  Movement speed and mouse sensitivity can be found in the 'Plugins/FPSNav' menu."
+     fpsNav.description += "  Left-click the mouse and hold to look around"
+     fpsNav.description += "  Double-clicking also toggles mouselook on."
+     fpsNav.description += "  Movement speed and mouse sensitivity can be found in the 'Plugins/FPSNav Options' menu."
      Sketchup.register_extension(fpsNav, true)
