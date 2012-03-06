@@ -175,6 +175,10 @@ class Chatham_FPSNavigator
         forwardVector = @FPSNav_target - @FPSNav_eye
         # Eliminate the z component
         forwardVector.z = 0
+        # If we're facing straight down, then make the movement vector the upward vector instead
+        if (forwardVector.length == 0)
+            forwardVector = @FPSNav_currentView.camera.up
+        end
         # Make the length equal 1
         forwardVector.normalize!
         
@@ -232,6 +236,7 @@ class Chatham_FPSNavigator
         sceneCamera = @FPSNav_currentView.camera
         @FPSNav_eye =  sceneCamera.eye 
         @FPSNav_target =  sceneCamera.target
+        @FPSNav_up = sceneCamera.up
         #Now move those values
         @FPSNav_eye.transform!(movementTransform)
         @FPSNav_target.transform!(movementTransform)
