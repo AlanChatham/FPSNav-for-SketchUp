@@ -131,20 +131,20 @@ class Chatham_FPSNavigator
     end
         
     def onKeyUp(key, repeat, flags, view)
-        # mac: only arrow key   #A, Left, or Numpad 4
-        if ((key == 65)  || (key == 63234)  || (key == VK_LEFT) || (key == 100) )
+        # mac: only arrow key   #A, Left, Numpad 4, or mac 'a'
+        if ((key == 65)  || (key == 63234)  || (key == VK_LEFT) || (key == 100) || (key == 97))
             @FPSNav_moveKeyFlags &= ~0b0010
         end
-        # mac: only arrow key   #D, Right, or Numpad 6
-        if ((key == 68)  || (key == 63235)  || (key == VK_RIGHT) || (key == 102) )
+        # mac: only arrow key   #D, Right, Numpad 6, or mac 'd'
+        if ((key == 68)  || (key == 63235)  || (key == VK_RIGHT) || (key == 102) || (key == 100) )
             @FPSNav_moveKeyFlags &= ~0b0001
         end
-        # mac: only arrow key   #W, Up, or Numpad 8
-        if ((key == 87)  || (key == 63232)  || (key == VK_UP) || (key == 104) )
+        # mac: only arrow key   #W, Up, Numpad 8, or mac 'w'
+        if ((key == 87)  || (key == 63232)  || (key == VK_UP) || (key == 104) || (key == 119) )
             @FPSNav_moveKeyFlags &= ~0b1000
         end 
-        # mac: only arrow key   #D, Down, or Numpad 5
-        if ((key == 83)  || (key == 63233)  || (key == VK_DOWN) || (key == 101) )
+        # mac: only arrow key   #S, Down, Numpad 5, or mac 's'
+        if ((key == 83)  || (key == 63233)  || (key == VK_DOWN) || (key == 101) || (key == 115) )
             @FPSNav_moveKeyFlags &= ~0b0100
         end
         # mac  > or command key   #E or Numpad 9
