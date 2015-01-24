@@ -1,6 +1,6 @@
 =begin
     FPS Navigator Plugin for Google SketchUp
-     Copyright 2011
+     Copyright 2015
      Alan Chatham
      
     This file is part of FPS Navigator Plugin.
