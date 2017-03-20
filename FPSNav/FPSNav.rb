@@ -224,7 +224,7 @@ class Chatham_FPSNavigator
         else
             @FPS_accel += @@Chatham_FPSNav_accelerationUnit
         end
-        movementVector.length = @@Chatham_FPSNav_moveSpeed * @FPS_accel    #   10
+        movementVector.length = @@Chatham_FPSNav_moveSpeed / 4 * @FPS_accel    #   10
  
         ## Clamp the movement speed
         if (movementVector.length > @@Chatham_FPSNav_maxSpeed)
