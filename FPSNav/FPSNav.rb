@@ -340,7 +340,7 @@ class Chatham_FPSNavigator
             horizontalAxis = sceneCamera.xaxis
             radiansToRotate = Float(@FPSNav_mouseY - @FPSNav_prevMouseY ) / @@Chatham_FPSNav_ySensitivity
             # And limit this axis
-            yRotationTransformation = Geom::Transformation.rotation(@FPSNav_eye, horizontalAxis, radiansToRotate)
+            yRotationTransformation = Geom::Transformation.rotation(@FPSNav_eye, horizontalAxis, -radiansToRotate)
             tempTarget = @FPSNav_target.transform(yRotationTransformation)
             vector1 = tempTarget - @FPSNav_eye
             angle = vector1.angle_between(@FPSNav_up)
