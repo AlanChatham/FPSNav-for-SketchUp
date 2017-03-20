@@ -69,23 +69,20 @@ class Chatham_FPSNavigator
         @FPSNav_movingFlag = 0
         @FPSNav_moveKeyFlags = 0; # U, DOWN, FORWARD, BACKWARD, LEFT, RIGHT are the last 6 bits
         # These hold info about the mouse.  The first two get updated when the mouse moves,
-        #  the second 2 when the mouseLook frame is called
+        #  the second 2 when mouse look happens
         @FPSNav_mouseX = 0
         @FPSNav_mouseY = 0
         @FPSNav_prevMouseX = 0
         @FPSNav_prevMouseY = 0
         @FPSNav_mouseClickedFlag = 0
         #This timer controls how often the movement should update
-        @FPSNav_mouseLookTimer = UI.start_timer(@@Chatham_FPSNav_pauseLength, true) {mouseLook}
+        @FPSNav_updateTimer = UI.start_timer(@@Chatham_FPSNav_pauseLength, true) {update}
         
     end
     
     #Cleanup
     def deactivate(view)
-        if(@FPSNav_moveTimer)
-            UI.stop_timer(@FPSNav_moveTimer)
-        end
-       UI.stop_timer(@FPSNav_mouseLookTimer)
+       UI.stop_timer(@FPSNav_updateTimer)
     end
     
     
@@ -119,7 +116,6 @@ class Chatham_FPSNavigator
         end 
         #Eventually...
         if (@FPSNav_movingFlag == 0 && @FPSNav_moveKeyFlags > 0)
-            @FPSNav_moveTimer = UI.start_timer(@@Chatham_FPSNav_pauseLength, true) {moveCamera}
             @FPSNav_movingFlag = 1;
         end
         
@@ -157,7 +153,6 @@ class Chatham_FPSNavigator
         end
         # If we were moving and let all the movement keys go, stop the moving routine
         if ((@FPSNav_movingFlag == 1 ) && (@FPSNav_moveKeyFlags == 0 ))
-            UI.stop_timer(@FPSNav_moveTimer)
             @FPS_accel = 1
             @FPSNav_movingFlag = 0
         end
@@ -304,11 +299,14 @@ class Chatham_FPSNavigator
         Sketchup.vcb_value = @FPSNav_eye.z;
     end
     
-    # This gets run every frame and points the camera toward the mouse cursor
+    # This gets run every frame, points the camera toward the mouse cursor if doing mouse look, and moves the camera if holding a key
     #  To implement mouseLook, we grab the cursor position from the screen,
     #  compare that to where the cursor was last frame, then rotate the eye target
     #  a certain amount based on those variables
-    def mouseLook
+    def update
+        if (@FPSNav_movingFlag == 1)
+            moveCamera
+        end
         # First off, only do this if we're clicking
         if (@FPSNav_mouseClickedFlag != 0)
             # Make sure we have the most recent data for camera target and eye position
