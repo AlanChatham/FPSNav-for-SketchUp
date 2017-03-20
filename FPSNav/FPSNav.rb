@@ -174,7 +174,7 @@ class Chatham_FPSNavigator
         #  We'll use this to calculate perpedicular vectors should we need to later
         forwardVector = @FPSNav_target - @FPSNav_eye
         # Eliminate the z component
-        forwardVector.z = 0
+        #forwardVector.z = 0
         # If we're facing straight down, then make the movement vector the upward vector instead
         movementUp = @FPSNav_up
         if (forwardVector.length == 0)
