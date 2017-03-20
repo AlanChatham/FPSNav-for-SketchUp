@@ -113,8 +113,8 @@ class Chatham_FPSNavigator
         if ((key == 69 && repeat == 1)  || (key == 46 && repeat == 1) || (key == VK_COMMAND && repeat == 1) )
             @FPSNav_moveKeyFlags |= 0b100000
         end  
-        # mac < or option key   #Q or Numpad 7
-        if ((key == 81 && repeat == 1)  || (key == 44 && repeat == 1) || (key == VK_ALT && repeat == 1) )
+        # mac < or option key   #X or Numpad 7
+        if ((key == 88 && repeat == 1)  || (key == 44 && repeat == 1) || (key == VK_ALT && repeat == 1) )
             @FPSNav_moveKeyFlags |= 0b010000
         end 
         #Eventually...
@@ -151,8 +151,8 @@ class Chatham_FPSNavigator
         if((key == 69)  ||  (key == 46) || (key == VK_COMMAND) )
             @FPSNav_moveKeyFlags &= ~0b100000
         end 
-        # mac < or option key   #Q or Numpad 7
-        if((key == 81)  ||  (key == 44) || (key == VK_ALT) )
+        # mac < or option key   #X or Numpad 7
+        if((key == 88)  ||  (key == 44) || (key == VK_ALT) )
             @FPSNav_moveKeyFlags &= ~0b010000
         end
         # If we were moving and let all the movement keys go, stop the moving routine
