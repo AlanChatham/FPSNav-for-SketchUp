@@ -69,23 +69,20 @@ class Chatham_FPSNavigator
         @FPSNav_movingFlag = 0
         @FPSNav_moveKeyFlags = 0; # U, DOWN, FORWARD, BACKWARD, LEFT, RIGHT are the last 6 bits
         # These hold info about the mouse.  The first two get updated when the mouse moves,
-        #  the second 2 when the mouseLook frame is called
+        #  the second 2 when mouse look happens
         @FPSNav_mouseX = 0
         @FPSNav_mouseY = 0
         @FPSNav_prevMouseX = 0
         @FPSNav_prevMouseY = 0
         @FPSNav_mouseClickedFlag = 0
         #This timer controls how often the movement should update
-        @FPSNav_mouseLookTimer = UI.start_timer(@@Chatham_FPSNav_pauseLength, true) {mouseLook}
+        @FPSNav_updateTimer = UI.start_timer(@@Chatham_FPSNav_pauseLength, true) {update}
         
     end
     
     #Cleanup
     def deactivate(view)
-        if(@FPSNav_moveTimer)
-            UI.stop_timer(@FPSNav_moveTimer)
-        end
-       UI.stop_timer(@FPSNav_mouseLookTimer)
+       UI.stop_timer(@FPSNav_updateTimer)
     end
     
     
@@ -113,13 +110,12 @@ class Chatham_FPSNavigator
         if ((key == 69 && repeat == 1)  || (key == 46 && repeat == 1) || (key == VK_COMMAND && repeat == 1) )
             @FPSNav_moveKeyFlags |= 0b100000
         end  
-        # mac < or option key   #Q or Numpad 7
-        if ((key == 81 && repeat == 1)  || (key == 44 && repeat == 1) || (key == VK_ALT && repeat == 1) )
+        # mac < or option key   #X or Numpad 7
+        if ((key == 88 && repeat == 1)  || (key == 44 && repeat == 1) || (key == VK_ALT && repeat == 1) )
             @FPSNav_moveKeyFlags |= 0b010000
         end 
         #Eventually...
         if (@FPSNav_movingFlag == 0 && @FPSNav_moveKeyFlags > 0)
-            @FPSNav_moveTimer = UI.start_timer(@@Chatham_FPSNav_pauseLength, true) {moveCamera}
             @FPSNav_movingFlag = 1;
         end
         
@@ -151,13 +147,12 @@ class Chatham_FPSNavigator
         if((key == 69)  ||  (key == 46) || (key == VK_COMMAND) )
             @FPSNav_moveKeyFlags &= ~0b100000
         end 
-        # mac < or option key   #Q or Numpad 7
-        if((key == 81)  ||  (key == 44) || (key == VK_ALT) )
+        # mac < or option key   #X or Numpad 7
+        if((key == 88)  ||  (key == 44) || (key == VK_ALT) )
             @FPSNav_moveKeyFlags &= ~0b010000
         end
         # If we were moving and let all the movement keys go, stop the moving routine
         if ((@FPSNav_movingFlag == 1 ) && (@FPSNav_moveKeyFlags == 0 ))
-            UI.stop_timer(@FPSNav_moveTimer)
             @FPS_accel = 1
             @FPSNav_movingFlag = 0
         end
@@ -174,7 +169,7 @@ class Chatham_FPSNavigator
         #  We'll use this to calculate perpedicular vectors should we need to later
         forwardVector = @FPSNav_target - @FPSNav_eye
         # Eliminate the z component
-        forwardVector.z = 0
+        #forwardVector.z = 0
         # If we're facing straight down, then make the movement vector the upward vector instead
         movementUp = @FPSNav_up
         if (forwardVector.length == 0)
@@ -224,7 +219,7 @@ class Chatham_FPSNavigator
         else
             @FPS_accel += @@Chatham_FPSNav_accelerationUnit
         end
-        movementVector.length = @@Chatham_FPSNav_moveSpeed * @FPS_accel    #   10
+        movementVector.length = @@Chatham_FPSNav_moveSpeed * @FPS_accel / 4.to_f
  
         ## Clamp the movement speed
         if (movementVector.length > @@Chatham_FPSNav_maxSpeed)
@@ -304,11 +299,14 @@ class Chatham_FPSNavigator
         Sketchup.vcb_value = @FPSNav_eye.z;
     end
     
-    # This gets run every frame and points the camera toward the mouse cursor
+    # This gets run every frame, points the camera toward the mouse cursor if doing mouse look, and moves the camera if holding a key
     #  To implement mouseLook, we grab the cursor position from the screen,
     #  compare that to where the cursor was last frame, then rotate the eye target
     #  a certain amount based on those variables
-    def mouseLook
+    def update
+        if (@FPSNav_movingFlag == 1)
+            moveCamera
+        end
         # First off, only do this if we're clicking
         if (@FPSNav_mouseClickedFlag != 0)
             # Make sure we have the most recent data for camera target and eye position
@@ -340,7 +338,7 @@ class Chatham_FPSNavigator
             horizontalAxis = sceneCamera.xaxis
             radiansToRotate = Float(@FPSNav_mouseY - @FPSNav_prevMouseY ) / @@Chatham_FPSNav_ySensitivity
             # And limit this axis
-            yRotationTransformation = Geom::Transformation.rotation(@FPSNav_eye, horizontalAxis, radiansToRotate)
+            yRotationTransformation = Geom::Transformation.rotation(@FPSNav_eye, horizontalAxis, -radiansToRotate)
             tempTarget = @FPSNav_target.transform(yRotationTransformation)
             vector1 = tempTarget - @FPSNav_eye
             angle = vector1.angle_between(@FPSNav_up)
