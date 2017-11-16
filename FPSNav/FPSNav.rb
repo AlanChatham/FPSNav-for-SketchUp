@@ -32,7 +32,7 @@ class Chatham_FPSNavigator
     # For these, lower numbers are more sensitive
     @@Chatham_FPSNav_xSensitivity = (Sketchup.read_default "Chatham_FPSNav", "Chatham_FPSNav_xSensitivity", 400).to_i
     @@Chatham_FPSNav_ySensitivity = (Sketchup.read_default "Chatham_FPSNav", "Chatham_FPSNav_ySensitivity", 600).to_i
-    @@Chatham_FPSNav_moveSpeed = (Sketchup.read_default "Chatham_FPSNav", "Chatham_FPSNav_moveSpeed", 2).to_i
+    @@Chatham_FPSNav_moveSpeed = (Sketchup.read_default "Chatham_FPSNav", "Chatham_FPSNav_moveSpeed", 2).to_f
     @FPS_accel = 1
     @@Chatham_FPSNav_accelerationUnit = 0.3
     @@Chatham_FPSNav_maxSpeed = 20
@@ -219,7 +219,7 @@ class Chatham_FPSNavigator
         else
             @FPS_accel += @@Chatham_FPSNav_accelerationUnit
         end
-        movementVector.length = @@Chatham_FPSNav_moveSpeed * @FPS_accel / 4.to_f
+        movementVector.length = @@Chatham_FPSNav_moveSpeed / 4.0 * @FPS_accel    #   10
  
         ## Clamp the movement speed
         if (movementVector.length > @@Chatham_FPSNav_maxSpeed)
@@ -383,7 +383,7 @@ class Chatham_FPSNavigator
     def self.setValues(valuesString)
         valuesArray = valuesString.split(":")
         #Make sure we get sensible values in
-        speed = valuesArray[0].to_i
+        speed = valuesArray[0].to_f
         xSensitivity = valuesArray[1].to_i
         ySensitivity = valuesArray[2].to_i
         
