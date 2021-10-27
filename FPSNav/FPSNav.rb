@@ -95,6 +95,10 @@ class Chatham_FPSNavigator
 		reset
 		Sketchup.active_model.tools.pop_tool() if reason == 0
 	end
+	
+	def suspend(view)
+		reset
+	end
 
 	# onKeyDown is called when the user presses a key on the keyboard.
 	# We are checking it here to see if the user pressed the shift key
